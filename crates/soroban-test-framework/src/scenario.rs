@@ -1,11 +1,9 @@
 //! High-level test scenario builder.
-//!
-//! A `Scenario` wraps the Soroban `Env` and provides a fluent API for
-//! setting up contract deployments, accounts, and state before assertions.
 
 use soroban_sdk::{Address, Env};
 
 use crate::fixtures::AccountFixture;
+use crate::runner::TestRunner;
 
 /// Central test orchestrator. Create one per test.
 pub struct Scenario {
@@ -20,12 +18,12 @@ impl Scenario {
         }
     }
 
+    /// Deploys a contract from raw WASM bytes and returns its address.
+    pub fn deploy(&self, wasm_bytes: &[u8]) -> Address {
+        self.env.register_contract_wasm(None, wasm_bytes)
+    }
+
     /// Creates a named account fixture with a deterministic address.
-    ///
-    /// # Example
-    /// ```rust,ignore
-    /// let alice = scenario.create_account("alice");
-    /// ```
     pub fn create_account(&self, name: &str) -> AccountFixture {
         AccountFixture::new(&self.env, name)
     }
@@ -37,14 +35,9 @@ impl Scenario {
         todo!("advance_ledger: update env ledger sequence and timestamp")
     }
 
-    /// Deploys a contract and returns its address.
-    ///
-    /// # Arguments
-    /// * `wasm_bytes` - The compiled WASM bytes of the contract.
-    pub fn deploy(&self, wasm_bytes: &[u8]) -> Address {
-        // TODO: register and deploy contract via env.register_contract_wasm
-        let _ = wasm_bytes;
-        todo!("deploy: register contract WASM and return address")
+    /// Returns a `TestRunner` bound to this scenario's environment.
+    pub fn runner(&self) -> TestRunner<'_> {
+        TestRunner::new(&self.env)
     }
 }
 

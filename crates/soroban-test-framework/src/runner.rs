@@ -1,16 +1,13 @@
 //! Contract invocation runner with result capture.
-//!
-//! `TestRunner` wraps contract calls and captures both successful results
-//! and expected errors, making assertions cleaner in tests.
 
-use soroban_sdk::{Env, IntoVal, Val};
+use soroban_sdk::{Env, Val};
 
 /// Wraps a contract invocation result for ergonomic assertions.
 pub struct InvokeResult<T> {
     pub inner: Result<T, soroban_sdk::Error>,
 }
 
-impl<T> InvokeResult<T> {
+impl<T: core::fmt::Debug> InvokeResult<T> {
     /// Asserts the invocation succeeded and returns the value.
     pub fn unwrap_ok(self) -> T {
         self.inner.expect("expected Ok but got Err")
@@ -47,7 +44,6 @@ impl<'a> TestRunner<'a> {
         func: &str,
         args: soroban_sdk::Vec<Val>,
     ) -> InvokeResult<T> {
-        // TODO: call env.invoke_contract(contract_id, &Symbol::new(env, func), args)
         let _ = (contract_id, func, args);
         todo!("invoke: call env.invoke_contract and wrap result")
     }
