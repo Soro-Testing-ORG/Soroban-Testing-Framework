@@ -16,12 +16,13 @@ Thumbs.db
 *.env.*
 secrets/
 
-# Issue management scripts (maintainer-only, not for contributors)
+# Issue management scripts and bodies (maintainer-only, not for contributors)
 scripts/
 issues/
 .issues/
 issue-scripts/
 wave-scripts/
+.github/issue-bodies/
 
 # Build artifacts
 *.wasm
