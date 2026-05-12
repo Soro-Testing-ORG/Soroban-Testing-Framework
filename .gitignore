@@ -27,3 +27,4 @@ wave-scripts/
 # Build artifacts
 *.wasm
 *.wat
+test_snapshots/
