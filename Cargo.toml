@@ -1,0 +1,10 @@
+[workspace]
+members = [
+    "crates/soroban-test-framework",
+    "examples/counter",
+    "examples/token",
+]
+resolver = "2"
+
+[workspace.dependencies]
+soroban-sdk = { version = "21.0.0", features = ["testutils"] }

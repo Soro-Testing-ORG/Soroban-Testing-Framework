@@ -1,0 +1,15 @@
+[package]
+name = "soroban-test-framework"
+version = "0.1.0"
+edition = "2021"
+description = "A higher-level testing framework for Soroban smart contracts"
+license = "MIT"
+repository = "https://github.com/your-org/soroban-test-framework"
+keywords = ["soroban", "stellar", "testing", "smart-contracts"]
+categories = ["development-tools::testing"]
+
+[dependencies]
+soroban-sdk = { workspace = true }
+
+[dev-dependencies]
+soroban-sdk = { workspace = true }

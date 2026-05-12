@@ -1,0 +1,28 @@
+# Rust
+/target
+Cargo.lock
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env / secrets
+.env
+*.env.*
+secrets/
+
+# Issue management scripts (maintainer-only, not for contributors)
+scripts/
+issues/
+.issues/
+issue-scripts/
+wave-scripts/
+
+# Build artifacts
+*.wasm
+*.wat
