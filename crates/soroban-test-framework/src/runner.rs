@@ -1,6 +1,6 @@
 //! Contract invocation runner with result capture.
 
-use soroban_sdk::{Env, Val};
+use soroban_sdk::{Env, InvokeError, Symbol, Val, Vec};
 
 /// Wraps a contract invocation result for ergonomic assertions.
 pub struct InvokeResult<T> {
@@ -31,20 +31,36 @@ impl<'a> TestRunner<'a> {
 
     /// Invokes a contract function and captures the result.
     ///
-    /// # Arguments
-    /// * `contract_id` - The deployed contract address.
-    /// * `func` - The function name to call.
-    /// * `args` - Arguments as a `soroban_sdk::Vec<Val>`.
-    ///
-    /// # TODO
-    /// Implement actual invocation via `env.invoke_contract`.
-    pub fn invoke<T: soroban_sdk::TryFromVal<Env, Val>>(
+    /// Returns `InvokeResult::Ok(value)` on success or `InvokeResult::Err(error)`
+    /// if the contract traps or returns an error code.
+    pub fn invoke<T>(
         &self,
         contract_id: &soroban_sdk::Address,
         func: &str,
-        args: soroban_sdk::Vec<Val>,
-    ) -> InvokeResult<T> {
-        let _ = (contract_id, func, args);
-        todo!("invoke: call env.invoke_contract and wrap result")
+        args: Vec<Val>,
+    ) -> InvokeResult<T>
+    where
+        T: soroban_sdk::TryFromVal<Env, Val>,
+    {
+        let symbol = Symbol::new(self.env, func);
+        let result = self
+            .env
+            .try_invoke_contract::<T, soroban_sdk::Error>(contract_id, &symbol, args);
+
+        let inner = match result {
+            Ok(Ok(val)) => Ok(val),
+            Ok(Err(_)) => Err(soroban_sdk::Error::from_type_and_code(
+                soroban_sdk::xdr::ScErrorType::Value,
+                soroban_sdk::xdr::ScErrorCode::InvalidInput,
+            )),
+            Err(Ok(e)) => Err(e),
+            Err(Err(InvokeError::Abort)) => panic!("contract invocation aborted"),
+            Err(Err(InvokeError::Contract(_code))) => Err(soroban_sdk::Error::from_type_and_code(
+                soroban_sdk::xdr::ScErrorType::Contract,
+                soroban_sdk::xdr::ScErrorCode::ArithDomain, // TODO: propagate _code directly
+            )),
+        };
+
+        InvokeResult { inner }
     }
 }
